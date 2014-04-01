@@ -10,6 +10,13 @@ float ax;
 float ay;
 float az;
 
+int maxSamples = 5;
+float[] samples;
+int currentIndex;
+float average;
+
+float savedTime;
+
 UDP connection;
 String ip ="255.255.255.255";
 int port = 11999;
@@ -20,7 +27,10 @@ void setup() {
   compass = new CompassManager(this);
   accelerometer = new AccelerometerManager(this);
   orientation(PORTRAIT);
-  noLoop();
+  savedTime = millis();
+  average = 0;
+  samples = new float[maxSamples];
+  currentIndex = 0;
 }
 
 void pause() {
@@ -61,25 +71,41 @@ void draw() {
   vertex(0, 50);
   vertex(20, 60);
   endShape(CLOSE);*/
+  
+  //Send data every 1/60 second
+  float passedTime = millis() - savedTime;
+  if (passedTime > (1 / 60) * 1000) {
+    savedTime = millis();
+    connection.send("direction:" + str((float)(((direction * 180) / Math.PI))) + "accelerometer:" + str(average), ip, port);
+  }
 }
 
 
 void directionEvent(float newDirection) {
   direction = newDirection;
-  connection.send("direction:" + str((float)(((direction * 180) / Math.PI))), ip, port);
+  //connection.send("direction:" + str((float)(((direction * 180) / Math.PI))), ip, port);
 }
 
 public void shakeEvent(float force) {
-  println("shake : " + force);
+  //println("shake : " + force);
 }
 
 
 public void accelerationEvent(float x, float y, float z) {
-//  println("acceleration: " + x + ", " + y + ", " + z);
-  ax = x;
+  //ax = x;
   ay = y;
-  az = z;
-  redraw();
-  connection.send("accelerometer:" + str(ay), ip, port);
+  //az = z;
+  samples[currentIndex] = ay;
+  currentIndex++;
+  if (currentIndex >= maxSamples) {
+    for (int i = 0; i < maxSamples; i++) {
+      average += samples[i];
+      samples[i] = 0;
+    }
+    average /= maxSamples;
+    currentIndex = 0;
+  }
+  //redraw();
+  //connection.send("accelerometer:" + str(ay), ip, port);
 }
 
