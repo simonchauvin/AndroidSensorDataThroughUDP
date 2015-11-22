@@ -1,7 +1,7 @@
-import hypermedia.net.*;
+import com.bckmnn.json.*;
+import com.bckmnn.udp.*;
 
-//import com.bckmnn.json.*;
-//import com.bckmnn.udp.*;
+import hypermedia.net.*;
 
 CompassManager compass;
 AccelerometerManager accelerometer;
@@ -51,7 +51,7 @@ void resume() {
 
 void draw() {
   background(0);
-  fill(192, 0, 0);
+  /*fill(192, 0, 0);
   textSize(18);
   textAlign(LEFT, UP);
   text("x: " + nf(ax, 1, 2) + "\n" + 
@@ -70,7 +70,7 @@ void draw() {
   vertex(-20, 60);
   vertex(0, 50);
   vertex(20, 60);
-  endShape(CLOSE);
+  endShape(CLOSE);*/
   
   //Send data every 1/60 second
   float passedTime = millis() - savedTime;
@@ -82,7 +82,7 @@ void draw() {
 
 
 void directionEvent(float newDirection) {
-  direction = newDirection;  
+  direction = newDirection;
   //connection.send("direction:" + str((float)(((direction * 180) / Math.PI))), ip, port);
 }
 
@@ -108,3 +108,4 @@ public void accelerationEvent(float x, float y, float z) {
   //redraw();
   //connection.send("accelerometer:" + str(ay), ip, port);
 }
+
